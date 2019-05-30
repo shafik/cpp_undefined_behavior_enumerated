@@ -1,61 +1,55 @@
 # [lex]
 ## [lex.phases]
 - if a splice results in a character sequence that matches the syntax of a universal-character-name, the behavior is undefined. *\[lex.phases\]/p2*
-    - Example from [Stacoverflow question](https://stackoverflow.com/q/43824729/1708801):
-
-    ```cpp
-    const char* p = "\\
-    u0041";
-    ```
-
-    - Rationale
-        - [DR 787](http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#787)
-        - [N3881 “Fixing the specification of universal-character-names”](http://open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3881.pdf)
+  - [\[lex.phases\]p1.2](http://eel.is/c++draft/lex.phases#1.2)
+  - Example from [Stacoverflow question](https://stackoverflow.com/q/43824729/1708801):
+  ```cpp
+  const char* p = "\\
+  u0041";
+  ```
+  - Rationale
+    - [DR 787](http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#787)
+    - [N3881 “Fixing the specification of universal-character-names”](http://open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3881.pdf)
 
 - If a character sequence that matches the syntax of a universal-character-name is produced by token concatenation (19.3.3), the behavior is undefined. *\[lex.phases\]/p4*
-    - example:  
-
-    ```cpp
-    #define GUARD_NAME ï ## _GUARD // UB per current spec
-    #define COLUMN "ï" ## _column // UB per current spec
-    ```
-    
-    - Rationale
-        - [DR 787](http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#787)
-        - [N3881 “Fixing the specification of universal-character-names”](http://open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3881.pdf)
+  - [\[lex.phases\]p1.4](http://eel.is/c++draft/lex.phases#1.4)
+  - Examples:  
+  ```cpp
+  #define GUARD_NAME ï ## _GUARD // UB per current spec
+  #define COLUMN "ï" ## _column // UB per current spec
+  ```
+  - Rationale
+    - [DR 787](http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#787)
+    - [N3881 “Fixing the specification of universal-character-names”](http://open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3881.pdf)
 
 ## [lex.pptoken]
 - A preprocessing token is the minimal lexical element of the language in translation phases 3 through 6. … If a **’** or a **"** character matches the last category, the behavior is undefined. *\[lex.pptoken\]/p2*
-    - Example [Why can't we use the preprocessor to create custom-delimeted strings?](https://stackoverflow.com/q/16798853/1708801)
+  - Example [Why can't we use the preprocessor to create custom-delimeted strings?](https://stackoverflow.com/q/16798853/1708801)
+  ```cpp
+  #define STR_START "
+  #define STR_END "
 
-```cpp
-#define STR_START "
-#define STR_END "
+  int puts(const char *);
 
-int puts(const char *);
-
-int main() {
+  int main() {
     puts(STR_START hello world STR_END);
-}
-```
-
-- Discussion 
+  }
+  ```
+  - Discussion 
     - [Should it be ill-formed](https://groups.google.com/a/isocpp.org/forum/#!msg/std-discussion/lk1qAvCiviY/Zer-8iL88rUJ)
-- Rationale
+  - Rationale
     - Preprocessing token are generated during phase 3 so string and character literals as well and header names are identified at this point. both ‘ and “ would only be valid as part of one of these tokens, any left over after this point perhaps as part of a macro would not be valid since they could not tokenized as needed anymore. Macros are expanded as part of phase 4.
         
 ## [lex.string]
 - The effect of attempting to modify a string literal is undefined
-    - Example:
+  - Examples:
+  ```cpp
+  const char *p1 = "hello world\n"; 
+  char *p2 = const_cast<char*>(p1) ;   // const_cast is already suspicious
     
-    ```cpp
-    const char *p1 = "hello world\n"; 
-    char *p2 = const_cast<char*>(p1) ;   // const_cast is already suspicious
-    
-    p2[0] = 'm' ;
-    ```
-   
-    - Rationale *\[lex.string\]p8
+  p2[0] = 'm' ;
+  ``` 
+  - Rationale *\[lex.string\]p8
     > Ordinary string literals and UTF-8 string literals are also referred to as narrow string literals. A narrow
 string literal **has type “array of n const char”**, where n is the size of the string as defined below, and has
 static storage duration (6.6.4).
@@ -92,10 +86,8 @@ static storage duration (6.6.4).
     }
     ```
 
-
-
-    - Rationale: 
-        - [Devirtualization in C++, part 7 (Enforcing One Definition Rule) ](http://hubicka.blogspot.com/2014/09/devirtualization-in-c-part-6-enforcing.html)
+  - Rationale: 
+    - [Devirtualization in C++, part 7 (Enforcing One Definition Rule) ](http://hubicka.blogspot.com/2014/09/devirtualization-in-c-part-6-enforcing.html)
 
 ## [basic.life]
 - A program may end the lifetime of any object by reusing the storage which the object occupies or by explicitly calling the
@@ -103,66 +95,65 @@ destructor for an object of a class type with a non-trivial destructor. For an o
 the program is not required to call the destructor explicitly before the storage which the object occupies is reused or released;
 however, **if there is no explicit call to the destructor or if a delete-expression ([expr.delete]) is not used to release the storage,
 the destructor shall not be implicitly called and any program that depends on the side effects produced by the destructor has undefined behavior.**
-    - [Pull request 2342 indicates this may not be undefined behavior at all](https://github.com/cplusplus/draft/pull/2342) and seeks the following edit<BR>
+  - [\[basic.life\]p5](http://eel.is/c++draft/basic.life#5)
+  - [Pull request 2342 indicates this may not be undefined behavior at all](https://github.com/cplusplus/draft/pull/2342) and seeks the following edit<BR>
         <s>implicitly called and any program that depends on the side effects produced by the destructor has undefined behavior</s><u>implicitly called</u>.
         
 ## [basic.indet]
 - If an indeterminate value is produced by an evaluation, the behavior is undefined except in the following
-cases ... \[basic.indet\]p2
-    - Example
-    ```cpp
-    int f(bool b) {
-      unsigned char c;
-      unsigned char d = c; // OK, d has an indeterminate value
-      int e = d; // undefined behavior
-      return b ? d : 0; // undefined behavior if b is true
-    }
-    ```
-    - Rationale 
-        - [WG14 Defect report 260](http://www.open-std.org/jtc1/sc22/wg14/www/docs/dr_260.htm)
-        - [WG14 Defect report 451](http://www.open-std.org/Jtc1/sc22/WG14/www/docs/dr_451.htm)
-        - Tl;DR; We have two case one in which using an indeterminate value is undefined behavior and this is because many type can have trap representations and using these value are undefined behavior. In the case of narrow character types the underlying values and type representation are one to one and therefore we don’t have a trap representation but they do retain their indeterminateness.
+cases 
+  - [\[basic.indet\]p2](http://eel.is/c++draft/basic.indet#2)
+  - Examples
+  ```cpp
+  int f(bool b) {
+    unsigned char c;
+    unsigned char d = c; // OK, d has an indeterminate value
+    int e = d; // undefined behavior
+    return b ? d : 0; // undefined behavior if b is true
+  }
+  ```
+  - Rationale 
+    - [WG14 Defect report 260](http://www.open-std.org/jtc1/sc22/wg14/www/docs/dr_260.htm)
+    - [WG14 Defect report 451](http://www.open-std.org/Jtc1/sc22/WG14/www/docs/dr_451.htm)
+    - Tl;DR; We have two case one in which using an indeterminate value is undefined behavior and this is because many type can have trap representations and using these value are undefined behavior. In the case of narrow character types the underlying values and type representation are one to one and therefore we don’t have a trap representation but they do retain their indeterminateness.
 
 ## [basic.start]
 
-- A hosted implementation shall contain a global function called main in one of the specified forms *\[basic.start.main\]*
-    - 6.8.3.1
-    - Example:
-
+- An implementation shall not predefine the main function. This function shall not be overloaded. Its type shall have C++ language linkage and it shall have a declared return type of type int, but otherwise its type is implementation-defined.
+    - [\[basic.start.main\]p2](http://eel.is/c++draft/basic.start#main-2)
+    - Examples:
     ```cpp
     void main() {}
     ```
-    - Rationale:
-    
     - Tools
-        - [Compiler static analysis, generates warnings or errors for void main](https://wandbox.org/permlink/9YlvHEA88lS0CbvV)
+      - [Compiler static analysis, generates warnings or errors for void main](https://wandbox.org/permlink/9YlvHEA88lS0CbvV)
 
-- The function main shall not be used within a program   *\[basic.start.main\]*
-    - 6.8.3.1
+- The function main shall not be used within a program  
+    - [\[basic.start.main\]p3](http://eel.is/c++draft/basic.start#main-3)
     - Examples:
-        - [Is it illegal to take address of main() function?](https://stackoverflow.com/q/15525613/1708801)
-        - [Why does gcc warn about decltype(main()) but not clang?](https://stackoverflow.com/q/25297257/1708801)
+      - [Is it illegal to take address of main() function?](https://stackoverflow.com/q/15525613/1708801)
+      - [Why does gcc warn about decltype(main()) but not clang?](https://stackoverflow.com/q/25297257/1708801)
+       
+      ```cpp
+      printf( “%p\n”, &main ) ;
+      decltype(main()) x = 0;
+      ```
         
-        ```cpp
-        printf( “%p\n”, &main ) ;
-        decltype(main()) x = 0;
-        ```
+      ```cpp
+      int main() {
+        std::cout << reinterpret_cast<void*>(&main) ;
+      }
+      ```
         
-        ```cpp
-        int main() {
-          std::cout << reinterpret_cast<void*>(&main) ;
-        }
-        ```
-        
-    - Tools
-        - [Compiler static analysis via -pedantic flag gcc/clang for taking address of main](https://wandbox.org/permlink/atm7dJ1LXaVBkCsU)
-        - [Compiler static analysis via -pedantic flag gcc/clang decltype main](https://wandbox.org/permlink/WvPFbU4hteDOX4w2)
+  - Tools
+    - [Compiler static analysis via -pedantic flag gcc/clang for taking address of main](https://wandbox.org/permlink/atm7dJ1LXaVBkCsU)
+    - [Compiler static analysis via -pedantic flag gcc/clang decltype main](https://wandbox.org/permlink/WvPFbU4hteDOX4w2)
 
-    - Rationale: 
-        - From ARM section 3.4 Start and Termination
-            > This is to ensure full freedom of the implementation of the interface between a C++ program and its environment.
-            > One could imagine an implementation where main() was not implemented as a function.
-        - [\[ub\] What does "The function main shall not be used within a program" mean?](http://www.open-std.org/pipermail/ub/2014-January/000474.html)
+  - Rationale: 
+    - From ARM section 3.4 Start and Termination
+      > This is to ensure full freedom of the implementation of the interface between a C++ program and its environment.
+      > One could imagine an implementation where main() was not implemented as a function.
+     - [\[ub\] What does "The function main shall not be used within a program" mean?](http://www.open-std.org/pipermail/ub/2014-January/000474.html)
     
 # [expr]
 
@@ -332,3 +323,69 @@ enclosing object of type D. Otherwise, the behavior is undefined.
   }
   ```
   - [Examples live](https://godbolt.org/)
+
+## [expr.mul]
+- Divison by zero is undefined behavior
+  - [\[expr.mul\]p4](http://eel.is/c++draft/expr.mul#4)
+  - Examples:
+  ```cpp
+  int x = 1/0;
+  double d = 1.0/0.0;
+  ```
+  - [Examples live](https://godbolt.org/z/d42Fsi)
+  
+## [expr.add]
+-  Incrementing pointer beyond one past the end of an array is undefined behavior
+  - [\[expr.add\]p4](http://eel.is/c++draft/expr.add#4) and [footnote](http://eel.is/c++draft/expr.add#footnote-80)
+  - Examples:
+  ```cpp
+  static const int arrs[10]{};
+
+  void f() {
+   const int* y = arrs + 11;
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/Oo9lWi)
+  
+  
+- Subtracting pointers that are not part of the same array is undefined behavior
+  - [\[expr.add\]p5.3](http://eel.is/c++draft/expr.add#5.3)
+  - Examples:
+   ```cpp
+   void f() {
+    int x;
+    int y;
+    int *p1=&x;
+    int *p2=&y;
+    std::ptrdiff_t off = p1-p2;
+   }
+   ```
+   - [Examples live](https://godbolt.org/z/BxwQjE)
+   
+ ## [expr.shift]
+ - Shifting by a negative amount is undefined behavior
+   - [\[expr.shift\]p1](http://eel.is/c++draft/expr.shift#1)
+   - Examples
+   ```cpp
+   int y = 1 << -1;
+   ```
+   - [Examples live](https://godbolt.org/z/op_tEL)
+   
+ - Shifting by equal or greater than the bit-width of a type is undefined behavior
+   - [\[expr.shift\]p1](http://eel.is/c++draft/expr.shift#1)
+   - Examples:
+   ```cpp
+   int y1 = 1 << 32;
+   int y2 = 1 >> 32;
+   ```
+   - [Examples live](https://godbolt.org/z/fx156-)
+   
+ - Shifting a negative signed type is undefined behavior (before C++20)
+   - [\[expr.shift\]p2](https://timsong-cpp.github.io/cppwp/n4659/expr.shift#2)
+   - Examples:
+   ```cpp
+   int y4 = -1 << 12;
+   ```
+   - [Examples live](https://godbolt.org/z/v3B1ij)
+   
+   
