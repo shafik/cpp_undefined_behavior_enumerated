@@ -175,7 +175,7 @@ cases ... \[basic.indet\]p2
     int x2=std::numeric_limits<int>::min()-1;
     int x3=std::numeric_limits<int>::min() / -1;
     ```
-    - [Examples live 1](https://godbolt.org/z/4M9uR7) and [examples live 2](https://godbolt.org/z/3ToiDL)
+  - [Examples live 1](https://godbolt.org/z/4M9uR7) and [examples live 2](https://godbolt.org/z/3ToiDL)
 
 ## [conv.double]
 
@@ -186,7 +186,7 @@ cases ... \[basic.indet\]p2
     double d2=DBL_MAX;
     float f=d2;
     ```
-    - [examples live](https://godbolt.org/z/p1y5JK)
+  - [examples live](https://godbolt.org/z/p1y5JK)
 
 ## [conv.fpint]
 
@@ -197,7 +197,7 @@ cases ... \[basic.indet\]p2
     double d=(double)INT_MAX+1;
     int x=d;
     ```
-      - [Examples live](https://godbolt.org/z/8p0t_C)
+    - [Examples live](https://godbolt.org/z/8p0t_C)
 
 ## [expr.call]
 - Calling a function through an expression whose function type is different from the function type of the called
@@ -218,7 +218,7 @@ function’s definition results in undefined behavior
     f(reinterpret_cast<c2>(f_c));
   }
   ```
-    - [Examples  live](https://gcc.godbolt.org/z/2gUEol)
+  - [Examples  live](https://gcc.godbolt.org/z/2gUEol)
 
 ## [expr.static.cast]
 - If the object of type “cv1 B” is actually a base class subobject of an object of type D, the result refers to the
@@ -236,6 +236,99 @@ enclosing object of type D. Otherwise, the behavior is undefined.
    static_cast<D2&>(b);
   }
   ```
-    - [Examples live](https://godbolt.org/z/z7RTFJ)
+  - [Examples live](https://godbolt.org/z/z7RTFJ)
+  
+- Setting an enum to a value outside the range of enumerators is undefined behavior
+  - [\[expr.static.cast\]p10](http://eel.is/c++draft/expr.static.cast#10) and [\[dcl.enum\]p8](http://eel.is/c++draft/dcl.enum#8)
+  - Examples
+  ```cpp
+  enum A {e1=1, e2};
 
+  void f() {
+    enum A a=static_cast<A>(4);   
+  } 
+  ```
+  - [Examples live](https://wandbox.org/permlink/YWXO1IQt3DLSSHmb)
+  
+- Down-casting to the wrong derived type is undefined behavior
+  - [\[expr.static.cast\]p11](http://eel.is/c++draft/expr.static.cast#11)
+  - Examples
+  ```cpp
+  struct B {};
+  struct D1:B {};
+  struct D2:B {};
 
+  void f() {
+    B* bp = new D1;
+    static_cast<D2*>(bp);
+  }
+  ```
+  - [Examples lives](https://godbolt.org/z/gfT5Bw)
+
+## [expr.delete]
+-  Using array delete on the result of a single object new expression and vice versa is undefined behavior
+  - [\[expr.delete\]p2])http://eel.is/c++draft/expr.delete#2)
+  - Examples
+  ```cpp
+  int *x = new int;
+  delete [] x;
+  ```
+  - [Examples live](https://godbolt.org/z/KI8XSc)
+  
+- If the dynamic type differs from the static type of the object being deleted that is undefined behavior
+  - [\[expr.delete\]p3](http://eel.is/c++draft/expr.delete#3)
+  - Examples
+  ```cpp
+  int *p = new int;
+  float *f = reinterpret_cast<float*>(p);
+  delete f;
+  ```
+  - [Examples lives](https://godbolt.org/z/Pj_Ljb)
+  
+- Deleting and incomplete type and the class turns out to have a non-trivial destructor is undefined behavior
+  - [\[expr.delete\]p5](http://eel.is/c++draft/expr.delete#5)
+  - Examples
+  ```cpp
+  struct A;
+
+  void f(A *p) {
+    delete p;
+  }
+
+  struct A {~A(){}};
+  ```
+  - [Examples live](https://godbolt.org/z/Jc6lKv)
+  
+## [expr.mptr.oper]
+- If the dynamic type of E1 does not contain the member to which E2 refers, the behavior is undefined
+  - [\[expr.mptr.oper\]p4](http://eel.is/c++draft/expr.mptr.oper#4)
+  - Examples:
+  ```cpp
+  struct B{};
+  struct D:B{int x;};
+
+  void f(){
+   B *b= new B;
+   D *d=static_cast<D*>(b);
+   int D::* p=&D::x;
+   (*d).*p=1;
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/wgNkKz)
+  
+- If the second operand is the null member pointer value (7.3.12), the behavior is undefined.
+  - [\[expr.mptr.oper\]p6](http://eel.is/c++draft/expr.mptr.oper#6)
+  - Examples:
+  ```cpp
+  struct S {
+   int i;
+  };
+  
+  void f()
+  {
+   S cs;
+   int S::* pm = nullptr;
+   cs.*pm = 88;
+  }
+  ```
+  - [Examples live](https://godbolt.org/)
