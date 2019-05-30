@@ -257,7 +257,7 @@ enclosing object of type D. Otherwise, the behavior is undefined.
   - [Examples lives](https://godbolt.org/z/gfT5Bw)
 
 ## [expr.delete]
--  Using array delete on the result of a single object new expression and vice versa is undefined behavior
+- Using array delete on the result of a single object new expression and vice versa is undefined behavior
   - [\[expr.delete\]p2])http://eel.is/c++draft/expr.delete#2)
   - Examples
   ```cpp
@@ -335,7 +335,7 @@ enclosing object of type D. Otherwise, the behavior is undefined.
   - [Examples live](https://godbolt.org/z/d42Fsi)
   
 ## [expr.add]
--  Incrementing pointer beyond one past the end of an array is undefined behavior
+- Incrementing pointer beyond one past the end of an array is undefined behavior
   - [\[expr.add\]p4](http://eel.is/c++draft/expr.add#4) and [footnote](http://eel.is/c++draft/expr.add#footnote-80)
   - Examples:
   ```cpp
@@ -363,29 +363,29 @@ enclosing object of type D. Otherwise, the behavior is undefined.
    - [Examples live](https://godbolt.org/z/BxwQjE)
    
  ## [expr.shift]
- - Shifting by a negative amount is undefined behavior
-   - [\[expr.shift\]p1](http://eel.is/c++draft/expr.shift#1)
-   - Examples
-   ```cpp
-   int y = 1 << -1;
-   ```
-   - [Examples live](https://godbolt.org/z/op_tEL)
+- Shifting by a negative amount is undefined behavior
+  - [\[expr.shift\]p1](http://eel.is/c++draft/expr.shift#1)
+  - Examples
+  ```cpp
+  int y = 1 << -1;
+  ```
+  - [Examples live](https://godbolt.org/z/op_tEL)
    
- - Shifting by equal or greater than the bit-width of a type is undefined behavior
-   - [\[expr.shift\]p1](http://eel.is/c++draft/expr.shift#1)
-   - Examples:
-   ```cpp
-   int y1 = 1 << 32;
-   int y2 = 1 >> 32;
-   ```
-   - [Examples live](https://godbolt.org/z/fx156-)
+- Shifting by equal or greater than the bit-width of a type is undefined behavior
+  - [\[expr.shift\]p1](http://eel.is/c++draft/expr.shift#1)
+  - Examples:
+  ```cpp
+  int y1 = 1 << 32;
+  int y2 = 1 >> 32;
+  ```
+  - [Examples live](https://godbolt.org/z/fx156-)
    
- - Shifting a negative signed type is undefined behavior (before C++20)
-   - [\[expr.shift\]p2](https://timsong-cpp.github.io/cppwp/n4659/expr.shift#2)
-   - Examples:
-   ```cpp
-   int y4 = -1 << 12;
-   ```
-   - [Examples live](https://godbolt.org/z/v3B1ij)
+- Shifting a negative signed type is undefined behavior (before C++20)
+  - [\[expr.shift\]p2](https://timsong-cpp.github.io/cppwp/n4659/expr.shift#2)
+  - Examples:
+  ```cpp
+  int y4 = -1 << 12;
+  ```
+  - [Examples live](https://godbolt.org/z/v3B1ij)
    
    
