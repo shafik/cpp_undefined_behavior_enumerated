@@ -389,3 +389,74 @@ enclosing object of type D. Otherwise, the behavior is undefined.
   - [Examples live](https://godbolt.org/z/v3B1ij)
    
    
+## [expr.ass]
+- Overlap in an assignment expression must be exact and the objects must have the same type
+  - [\[expr.ass\]p8](http://eel.is/c++draft/expr.ass#8)
+  - Examples:
+  ```cpp
+  int x=1;
+  char *c=reinterpret_cast<char*>(&x);
+  x = *c;
+  ```
+  - [Examples live](https://godbolt.org/z/LGBL7k)
+  
+# [stmt.stmt]
+## [stmt.return]
+- Flowing off the end of a value returning function is undefined behavior
+  - [\[stmt.return\]p2](http://eel.is/c++draft/stmt.return#2.sentence-8)
+  - Examples:
+  ```cpp
+  int f(int x) {
+  if(x)
+    return 1;
+  }
+ 
+  void b(){
+   int x=f(0);
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/62CGnB)
+  - [Also see]( https://twitter.com/shafikyaghmour/status/975224687444688896)
+  
+## [stmt.dcl]
+- Recursively entering declaration of a block scope static variable during initialization is undefined behavior
+  - [\[stmt.dcl\]p4](http://eel.is/c++draft/stmt.dcl#4)
+  - Examples:
+  ```cpp
+  int foo(int i) {
+  static int s = foo(2*i);
+  return i+1;
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/mT9a-_)
+  
+# [dcl.dcl]
+## [dcl.type.cv]
+- Attempting to modify a const object is undefined behavior
+  - [\[dcl.type.cv\]p4](http://eel.is/c++draft/dcl.type.cv#4)
+  - Examples:
+  ```cpp
+  int bar() {
+  const int x=1;
+
+  int *p = const_cast<int*>(&x);
+  *p = 2;
+
+  return *p;
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/MArrbe)
+  
+- Accessing a volatile value through a non-volatile is undefined behavior
+  - [\[dcl.type.cv\]p5](http://eel.is/c++draft/dcl.spec#dcl.type.cv-5)
+  - Examples:
+  ```cpp
+  void f() {
+  volatile int x=0;
+  int &y=const_cast<int&>(x);
+  std::cout << y;
+  }
+  ```
+  -[Examples live](https://godbolt.org/z/4xKsxy)
+  
+  
