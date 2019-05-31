@@ -7,6 +7,7 @@
   const char* p = "\\
   u0041";
   ```
+  - [Examples live](https://godbolt.org/z/xZLefc)
   - Rationale
     - [DR 787](http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#787)
     - [N3881 “Fixing the specification of universal-character-names”](http://open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3881.pdf)
@@ -18,6 +19,7 @@
   #define GUARD_NAME ï ## _GUARD // UB per current spec
   #define COLUMN "ï" ## _column // UB per current spec
   ```
+  - [Examples live](https://godbolt.org/z/BO8PGi)
   - Rationale
     - [DR 787](http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#787)
     - [N3881 “Fixing the specification of universal-character-names”](http://open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3881.pdf)
@@ -35,6 +37,7 @@
     puts(STR_START hello world STR_END);
   }
   ```
+  - [Examples live](https://godbolt.org/z/mqiAJw)
   - Discussion 
     - [Should it be ill-formed](https://groups.google.com/a/isocpp.org/forum/#!msg/std-discussion/lk1qAvCiviY/Zer-8iL88rUJ)
   - Rationale
@@ -49,6 +52,7 @@
     
   p2[0] = 'm' ;
   ``` 
+  - [Examples live](https://godbolt.org/z/wrNAzz)
   - Rationale *\[lex.string\]p8
     > Ordinary string literals and UTF-8 string literals are also referred to as narrow string literals. A narrow
 string literal **has type “array of n const char”**, where n is the size of the string as defined below, and has
