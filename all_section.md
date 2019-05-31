@@ -460,3 +460,301 @@ enclosing object of type D. Otherwise, the behavior is undefined.
   -[Examples live](https://godbolt.org/z/4xKsxy)
   
   
+## [dcl.attr.contract.syn]
+- In contracts side effects in a predicate to an object whose lifetime did not begin and end within the evaluation of the predicate are undefined behavior
+  - [\[dcl.attr.contract.syn\]p6](http://eel.is/c++draft/dcl.attr.contract#syn-6)
+  - Examples:
+  ```cpp
+  int min = -42;
+  constexpr int g(int x) {
+    /* ... */
+    [[assert: ++min > 0]]; // undefined behavior
+    /* ... */
+    return 0;
+  }
+  ```
+  - [Examples live](http://fragata.arcos.inf.uc3m.es/#g:!((g:!((g:!((h:codeEditor,i:(j:1,lang:c%2B%2B,source:'int+min+%3D+-42%3B%0Aconstexpr+int+g(int+x)%7B%0A++/*+...+*/%0A++%5B%5Bassert:+%2B%2Bmin+%3E+0%5D%5D%3B+//+undefined+behavior%0A++/*+...+*/%0A++return+0%3B%0A%7D'),l:'5',n:'0',o:'C%2B%2B+source+%231',t:'0')),k:50,l:'4',n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:clang%2B%2B-master,filters:(b:'0',binary:'1',commentOnly:'0',demangle:'0',directives:'0',execute:'1',intel:'0',trim:'0'),lang:c%2B%2B,libs:!(),options:'',source:1),l:'5',n:'0',o:'Clang+6.0.0+x86_64+%5Bclang-contracts%5D+(master)+(Editor+%231,+Compiler+%231)+C%2B%2B',t:'0')),k:50,l:'4',m:50,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compiler:1,editor:1),l:'5',n:'0',o:'%231+with+Clang+6.0.0+x86_64+%5Bclang-contracts%5D+(master)',t:'0')),header:(),l:'4',m:50,n:'0',o:'',s:0,t:'0')),k:50,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4)
+  
+## [dcl.attr.contract.syn]
+- if a postcondition odr-uses a non-reference parameter in its predicate and the function body makes direct or indirect modifications of the value of that parameter, the behavior is undefined.
+  - [\[dcl.attr.contract.cond\]p7](http://eel.is/c++draft/dcl.attr.contract#cond-7)
+  - Examples:
+  ```cpp
+  int f(int x)
+  [[ensures r: r == x]]
+  {
+    return ++x; // UB
+  }
+  ```
+  - [Examples live](http://fragata.arcos.inf.uc3m.es/#g:!((g:!((g:!((h:codeEditor,i:(j:1,lang:c%2B%2B,source:'int+f(int+x)%0A++%5B%5Bensures+r:+r+%3D%3D+x%5D%5D%0A%7B%0A++return+%2B%2Bx%3B+//+UB%0A%7D%0A'),l:'5',n:'0',o:'C%2B%2B+source+%231',t:'0')),k:50,l:'4',n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:clang%2B%2B-master,filters:(b:'0',binary:'1',commentOnly:'0',demangle:'0',directives:'0',execute:'1',intel:'0',trim:'0'),lang:c%2B%2B,libs:!(),options:'',source:1),l:'5',n:'0',o:'Clang+6.0.0+x86_64+%5Bclang-contracts%5D+(master)+(Editor+%231,+Compiler+%231)+C%2B%2B',t:'0')),k:50,l:'4',m:50,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compiler:1,editor:1),l:'5',n:'0',o:'%231+with+Clang+6.0.0+x86_64+%5Bclang-contracts%5D+(master)',t:'0')),header:(),l:'4',m:50,n:'0',o:'',s:0,t:'0')),k:50,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4)
+  
+## [dcl.attr.contract.check]
+- Violating a non-checked contract is undefined behavior outside of a constant expression context
+  - [\[dcl.attr.contract.check\]p4](http://eel.is/c++draft/dcl.attr.contract#check-4)
+  - Rationale see [p1321r0](http://open-std.org/JTC1/SC22/WG21/docs/papers/2018/p1321r0.html) and [p1490r0](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1490r0.html)
+  - Examples:
+  ```cpp
+  void f(int x) [[expects audit: x>=1 && x<=2]];
+ 
+  void b() {
+    f(100);
+  }
+  ```
+  - [Examples live](http://fragata.arcos.inf.uc3m.es/#g:!((g:!((g:!((h:codeEditor,i:(j:1,lang:c%2B%2B,source:'void+f(int+x)+%5B%5Bexpects+audit:+x%3E%3D1+%26%26+x%3C%3D2%5D%5D%3B%0A%0Avoid+b()+%7B%0A++f(100)%3B%0A%7D'),l:'5',n:'0',o:'C%2B%2B+source+%231',t:'0')),k:50,l:'4',n:'0',o:'',s:0,t:'0'),(g:!((g:!((h:compiler,i:(compiler:clang%2B%2B-master,filters:(b:'0',binary:'1',commentOnly:'0',demangle:'0',directives:'0',execute:'1',intel:'0',trim:'0'),lang:c%2B%2B,libs:!(),options:'',source:1),l:'5',n:'0',o:'Clang+6.0.0+x86_64+%5Bclang-contracts%5D+(master)+(Editor+%231,+Compiler+%231)+C%2B%2B',t:'0')),k:50,l:'4',m:50,n:'0',o:'',s:0,t:'0'),(g:!((h:output,i:(compiler:1,editor:1),l:'5',n:'0',o:'%231+with+Clang+6.0.0+x86_64+%5Bclang-contracts%5D+(master)',t:'0')),header:(),l:'4',m:50,n:'0',o:'',s:0,t:'0')),k:50,l:'3',n:'0',o:'',t:'0')),l:'2',n:'0',o:'',t:'0')),version:4)
+  
+## [dcl.attr.noreturn]
+- A function declared noreturn eventually returns it is undefined behavior
+  - [\[dcl.attr.noreturn\]p2](http://eel.is/c++draft/dcl.attr.noreturn#2)
+  - Examples:
+  ```cpp
+  [[ noreturn ]] void q(int i) { // behavior is undefined if called with an argument <= 0
+  if (i > 0)
+    throw "positive";
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/_8GQBg)
+  
+# [class]
+  
+## [class.mfct.non-static]
+- Calling a non-static member function of a class with an object that is not of that type is undefined behavior
+  - [\[class.mfct.non-static\]p2](http://eel.is/c++draft/class.mem#class.mfct.non-static-2)
+  - Examples:
+  ```cpp
+  struct X {
+    int x=1;
+    int f() { return x;}
+  };
+
+  struct A {int x=3;};
+
+  int f(X*x) {
+    return x->f();
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/0zBLzy)
+  
+## [class.dtor]
+- Explicit destructor call for an object not of the type is undefined behavior
+  - [\[class.dtor\]p14](http://eel.is/c++draft/class.dtor#14)
+  - Examples:
+  ```cpp
+  struct X {};
+
+  void f() {
+    X *x=nullptr;
+    x->~X();
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/Qola5k)
+  
+- Invoking the destructor for an object once its lifetime has ended is undefined behavior
+  - [\[class.dtor\]p16](http://eel.is/c++draft/class.dtor#16)
+  - Examples:
+  ```cpp
+  struct A{
+     ~A(){}
+  };
+
+  int main() {
+    A a;
+    a.~A(); // Destructor will be invoked again at scope exit invoking UB
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/kHMPig)
+  
+## [class.union]
+- Accessing a non-active union member is undefined behavior
+  - [\[class.union\]p1](http://eel.is/c++draft/class.union#1)
+  - Examples:
+  ```cpp
+  union Y { float f; int k; };
+  void g() {
+   Y y = { 1.0f }; // OK, y.f is active union member (10.3)
+   int n = y.k;
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/LbbRnS)
+  
+## [class.abstract]
+- Calling a virtual function from a constructor or destructor in an abstract class is undefined behavior
+  - [\[class.abstract\]p6](http://eel.is/c++draft/class.derived#class.abstract-6)
+  - Examples:
+  ```cpp
+  struct B {
+   virtual void f()=0;
+   B() { f();}
+  };
+
+  struct D : B{
+      void f() override { }
+  };
+  ```
+  - [Examples live](https://godbolt.org/z/mFTX2B)
+  
+## [class.base.init]
+- Calling a member function before all baes are initialized is undefined behavior
+  - [\[class.base.init\]p16](http://eel.is/c++draft/class.base.init#16)
+  - Examples:
+  ```cpp
+  struct B {
+    B(int);
+  };
+
+  struct D : public B {
+    int f();
+    D() : B(f()) {}
+  };
+  ```
+  - [Examples live](https://godbolt.org/z/um0iNu)
+  
+## [class.cdtor]
+- For an object with a non-trivial constructor, referring to any non-static member or base class of the object
+before the constructor begins execution results in undefined behavior
+  - [\[class.cdtor\]p1](http://eel.is/c++draft/class.cdtor#1)
+  - Examples
+  ```cpp
+  struct W { int j; };
+  struct X : public virtual W { };
+  
+  struct Y {
+   int* p;
+   X x; 
+   Y() : p(&x.j) { // undefined, x is not yet constructed
+    }
+  };
+  ```
+  - [Examples live](https://godbolt.org/z/fFbAY9)
+  
+- To explicitly or implicitly convert a pointer (a glvalue) referring to an object of class X to a pointer (reference)
+to a direct or indirect base class B of X, the construction of X and the construction of all of its direct or
+indirect bases that directly or indirectly derive from B shall have started and the destruction of these classes
+shall not have completed, otherwise the conversion results in undefined behavior
+  - [\[class.cdtor\]p3](http://eel.is/c++draft/class.cdtor#3)
+  - Examples:
+  ```cpp
+  struct A { };
+  struct B : virtual A { };
+  struct C : B { };
+  struct D : virtual A { D(A*); };
+  struct X { X(A*); };
+
+  struct E : C, D, X {
+    E() : D(this), // undefined: upcast from E* to A* might use path E* ! D* ! A*
+                       // but D is not constructed
+
+                      // “D((C*)this)” would be defined: E* ! C* is defined because E() has started,
+                     // and C* ! A* is defined because C is fully constructed
+
+      X(this) {} // defined: upon construction of X, C/B/D/A sublattice is fully constructed. 
+  };
+  ```
+  - [Examples live](https://godbolt.org/z/Xu8yOi)
+  
+- To form a pointer to (or access the value of) a direct non-static member of an object obj, the construction of obj shall have started and its destruction shall not have completed, otherwise the computation of the pointer value (or accessing
+the member value) results in undefined behavior. 
+  - [\[class.cdtor\]p3](http://eel.is/c++draft/class.cdtor#3)
+  - Examples:
+  ```cpp
+  struct A {
+    int x;
+  };
+
+  void f() {
+    A a;
+    a.~A();
+    int *p=&a.x; // Destruction completed so computing the pointer is undefined behavior
+  }
+  ```
+  - [Examples lives](https://godbolt.org/z/O89aee)
+  
+- If the virtual function call uses an explicit class member access (7.6.1.4) and the object expression refers to the complete
+object of x or one of that object’s base class subobjects but not x or one of its base class subobjects, the
+behavior is undefined.
+  - [\[class.cdtor\]p4](http://eel.is/c++draft/class.cdtor#4)
+  - Examples:
+  ```cpp
+  struct V {
+    virtual void f();
+    virtual void g();
+  };
+
+  struct A : virtual V {
+    virtual void f();
+  };
+
+  struct B : virtual V {
+    virtual void g(); 
+    B(V*, A*);
+  };
+
+  struct D : A, B {
+    virtual void f();
+    virtual void g();
+    D() : B((A*)this, this) { }
+  };
+
+  B::B(V* v, A* a) {
+    f(); // calls V::f, not A::f
+    g(); // calls B::g, not D::g
+    v->g(); // v is base of B, the call is well-defined, calls B::g
+    a->f(); // undefined behavior, a’s type not a base of B. 
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/-U8W-2)
+  
+- If the operand of typeid refers to the object under construction or destruction and the static type of the operand is neither the constructor or destructor’s class nor one of its bases, the behavior is undefined
+  - [\[class.cdtor\]p5](http://eel.is/c++draft/class.cdtor#5)
+  - Examples:
+  ```cpp
+  struct V {
+   virtual void f();
+  };
+
+  struct A : virtual V { };
+  struct B : virtual V {
+   B(V*, A*);
+  };
+
+  struct D : A, B {
+   D() : B((A*)this, this) { }
+  };
+
+  B::B(V* v, A* a) {
+    typeid(*this); // type_info for B.
+    typeid(*v); // well-defined: *v has type V, a base of B yields type_info for B
+    typeid(*a); // undefined behavior: type A not a base of B
+    dynamic_cast<B*>(v); // well-defined: v of type V*, V base of B results in B*
+    dynamic_cast<B*>(a); // undefined behavior, a has type A*, A not a base of B
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/XH7xat)
+  
+- If the operand of the dynamic_cast refers to the object under construction or destruction and the static type
+of the operand is not a pointer to or object of the constructor or destructor’s own class or one of its bases,
+the dynamic_cast results in undefined behavior
+  - [\[class.cdtor\]p6](http://eel.is/c++draft/class.cdtor#6)
+  - Examples:
+  ```cpp
+    struct V {
+   virtual void f();
+  };
+
+  struct A : virtual V { };
+  struct B : virtual V {
+   B(V*, A*);
+  };
+
+  struct D : A, B {
+   D() : B((A*)this, this) { }
+  };
+
+  B::B(V* v, A* a) {
+    typeid(*this); // type_info for B.
+    typeid(*v); // well-defined: *v has type V, a base of B yields type_info for B
+    typeid(*a); // undefined behavior: type A not a base of B
+    dynamic_cast<B*>(v); // well-defined: v of type V*, V base of B results in B*
+    dynamic_cast<B*>(a); // undefined behavior, a has type A*, A not a base of B
+  }
+  ```
+  - [Examples live](https://godbolt.org/z/XH7xat)
