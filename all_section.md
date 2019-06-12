@@ -1,8 +1,8 @@
 # [lex]
 ## [lex.phases]
-- if a splice results in a character sequence that matches the syntax of a universal-character-name, the behavior is undefined. *\[lex.phases\]/p2*
+- if a splice results in a character sequence that matches the syntax of a universal-character-name, the behavior is undefined. 
   - [\[lex.phases\]p1.2](http://eel.is/c++draft/lex.phases#1.2)
-  - Example from [Stacoverflow question](https://stackoverflow.com/q/43824729/1708801):
+  - Example from [Stack Overflow question](https://stackoverflow.com/q/43824729/1708801):
   ```cpp
   const char* p = "\\
   u0041";
