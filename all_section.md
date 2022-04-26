@@ -536,6 +536,11 @@ enclosing object of type D. Otherwise, the behavior is undefined.
   int f(X*x) {
     return x->f();
   }
+
+  int main() {
+    A a;
+    std::cout<< f(reinterpret_cast<X*>(&a));
+  }
   ```
   - [Examples live](https://godbolt.org/z/0zBLzy)
   
